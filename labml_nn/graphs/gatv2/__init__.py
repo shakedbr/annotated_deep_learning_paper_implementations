@@ -15,7 +15,7 @@ A graph consists of nodes and edges connecting nodes.
 For example, in Cora dataset the nodes are research papers and the edges are citations that
 connect the papers.
 
-The GATv2 operator which fixes the static attention problem of the standard GAT: 
+The GATv2 operator fixes the static attention problem of the standard GAT: 
 since the linear layers in the standard GAT are applied right after each other, the ranking 
 of attended nodes is unconditioned on the query node. 
 In contrast, in GATv2, every node can attend to any other node.
@@ -125,7 +125,7 @@ class GraphAttentionV2Layer(Module):
         # $a$ is the attention mechanism, that calculates the attention score.
         # The paper sums
         # $\overrightarrow{{g_l}_i}$, $\overrightarrow{{g_r}_j}$
-        # followed by a $\text{LeakyReLU}$
+        # followed by a $\text{LeakyReLU}$  
         # and does a linear transformation with a weight vector $\mathbf{a} \in \mathbb{R}^{F'}$
         # 
         #
@@ -133,6 +133,12 @@ class GraphAttentionV2Layer(Module):
         # \Big[
         # \overrightarrow{{g_l}_i}} + \overrightarrow{{g_r}_j}}
         # \Big] \Big)$$
+        # Note: The paper desrcibes $$e_{ij}$$ as         
+        # $$e_{ij} = \mathbf{a}^\top \text{LeakyReLU} \Big( \mathbf{W}
+        # \Big[
+        # \overrightarrow{h_i} \Vert \overrightarrow{h_j}
+        # \Big] \Big)$$
+        # which is equivalent to the definition we use here.
 
         # First we calculate
         # $\Big[\overrightarrow{{g_l}_i} + \overrightarrow{{g_r}_j} \Big]$
@@ -148,7 +154,7 @@ class GraphAttentionV2Layer(Module):
         # \overrightarrow{{g_r}_2}, \overrightarrow{{g_r}_2}, \dots, \overrightarrow{{g_r}_2}, ...\}$$
         # where each node embedding is repeated `n_nodes` times.
         g_r_repeat_interleave = g_r.repeat_interleave(n_nodes, dim=0)
-        # Now we sum to get
+        # Now we add the two tensors to get
         # $$\{\overrightarrow{{g_l}_1} + \overrightarrow{{g_r}_1},
         # \overrightarrow{{g_l}_1}, + \overrightarrow{{g_r}_2},
         # \dots, \overrightarrow{{g_l}_1}  +\overrightarrow{{g_r}_N},
